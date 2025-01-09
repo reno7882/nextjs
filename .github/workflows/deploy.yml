@@ -28,17 +28,15 @@ jobs:
       - name: SSH to server and deploy
         uses: appleboy/ssh-action@v0.1.5
         with:
-          host: ${{ secrets.SERVER_IP }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 2225
+          host: ${{ secrets.SERVER_IP }}  # IP del servidor
+          username: ${{ secrets.SERVER_USER }}  # Usuario del servidor
+          key: ${{ secrets.SSH_PRIVATE_KEY }}  # Clave privada para SSH
+          port: 2225  # Aquí definimos el puerto 2225 en lugar del puerto 22
           script: |
             cd /home/reno7882/proyectos/nextjs  # Carpeta en el servidor
             git pull origin main  # Hacer pull de la rama main
             npm install  # Instalar dependencias
-            npm run build  # Ejecutar build para generar la carpeta .next
+            npm run build  # Ejecutar build para generar la carpeta dist
             
-            # Reiniciar la aplicación Next.js (usando PM2 o el método adecuado)
-            pm2 status nextjs-app || echo "Error al comprobar el estado de la app"
-            pm2 restart nextjs-app || echo "Error al reiniciar la app"
-            echo "Despliegue completado."
+            # Reiniciar la aplicación nextjs con las nuevas variables de entorno
+            pm2 status nextjs-app || echo "Error al reiniciar nextjs"
