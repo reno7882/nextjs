@@ -1,0 +1,44 @@
+name: Deploy to Server
+
+on:
+  push:
+    branches:
+      - main  # Desplegar cuando se haga push a la rama main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18.19.1'
+
+      - name: Install dependencies
+        run: |
+          npm install
+
+      - name: Build project
+        run: |
+          npm run build  # Este paso debe ser ejecutado en el servidor, si no se ha hecho antes
+
+      - name: SSH to server and deploy
+        uses: appleboy/ssh-action@v0.1.5
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 2225
+          script: |
+            cd /home/reno7882/proyectos/nextjs  # Carpeta en el servidor
+            git pull origin main  # Hacer pull de la rama main
+            npm install  # Instalar dependencias
+            npm run build  # Ejecutar build para generar la carpeta .next
+            
+            # Reiniciar la aplicación Next.js (usando PM2 o el método adecuado)
+            pm2 status nextjs-app || echo "Error al comprobar el estado de la app"
+            pm2 restart nextjs-app || echo "Error al reiniciar la app"
+            echo "Despliegue completado."
