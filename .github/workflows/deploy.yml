@@ -37,6 +37,7 @@ jobs:
             git pull origin main  # Hacer pull de la rama main
             npm install  # Instalar dependencias
             npm run build  # Ejecutar build para generar la carpeta dist
+            pm2 restart nextjs-app
             
             # Reiniciar la aplicación nextjs con las nuevas variables de entorno
             pm2 status nextjs-app || echo "Error al reiniciar nextjs"
