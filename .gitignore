@@ -1,1 +1,3 @@
 node_modules
+# Ignorar la carpeta .next generada por Next.js
+.next
