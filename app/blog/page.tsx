@@ -28,7 +28,7 @@ const BlogPage = async () => {
     const options: Intl.DateTimeFormatOptions = {
       year: 'numeric',
       month: 'short',
-      day: 'numeric'
+      day: 'numeric',
     };
     const date = new Date(dateString);
     return date.toLocaleDateString('es-MX', options);  // Formato de fecha en español
@@ -41,30 +41,37 @@ const BlogPage = async () => {
         {articles.length === 0 ? (
           <p>No hay artículos disponibles.</p>
         ) : (
-          articles.map((article: Article) => (
-            <div key={article.id} style={{ marginBottom: '20px' }}>
-              <Link href={`/blog/${article.slug}`}>
-                <Card className="py-4">
-                  <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
-                    <h4 className="font-bold text-large">{article.title}</h4>
-                    <small className="text-default-500">{formatDate(article.publishedAt)}</small>  {/* Fecha formateada */}
-                    <p className="text-tiny uppercase font-bold">{article.category.name}</p>  {/* Categoria del artículo */}
-                  </CardHeader>
-                  <CardBody className="overflow-visible py-2">
-                    <div style={{ position: 'relative', width: '100%', height: 'auto' }}>
-                      <Image
-                        alt={article.cover.alternativeText}
-                        className="object-cover rounded-xl"
-                        src={`${apiUrl}${article.cover.url}`}
-                        style={{ objectFit: 'cover', width: '100%', height: '300px' }}
-                      />
-                    </div>
-                    {article.description}
-                  </CardBody>
-                </Card>
-              </Link>
-            </div>
-          ))
+          articles.map((article: Article) => {
+            // Lógica condicional para la URL de la imagen
+            const coverUrl = article.cover.url.includes("cloudinary")
+              ? article.cover.url // Si contiene "cloudinary", usa la URL tal cual
+              : `${apiUrl}${article.cover.url}`; // Si no contiene "cloudinary", usa la URL relativa con la base
+
+            return (
+              <div key={article.id} style={{ marginBottom: '20px' }}>
+                <Link href={`/blog/${article.slug}`}>
+                  <Card className="py-4">
+                    <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
+                      <h4 className="font-bold text-large">{article.title}</h4>
+                      <small className="text-default-500">{formatDate(article.publishedAt)}</small>  {/* Fecha formateada */}
+                      <p className="text-tiny uppercase font-bold">{article.category.name}</p>  {/* Categoria del artículo */}
+                    </CardHeader>
+                    <CardBody className="overflow-visible py-2">
+                      <div style={{ position: 'relative', width: '100%', height: 'auto' }}>
+                        <Image
+                          alt={article.cover.alternativeText}
+                          className="object-cover rounded-xl"
+                          src={coverUrl}  // Usar la URL calculada
+                          style={{ objectFit: 'cover', width: '100%', height: '300px' }}
+                        />
+                      </div>
+                      {article.description}
+                    </CardBody>
+                  </Card>
+                </Link>
+              </div>
+            );
+          })
         )}
       </div>
     </div>
