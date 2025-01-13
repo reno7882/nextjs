@@ -21,6 +21,10 @@ jobs:
         run: |
           npm install
 
+      - name: Set NEXT_PUBLIC_API_BASE_URL environment variable
+        run: |
+          echo "NEXT_PUBLIC_API_BASE_URL=${{ secrets.NEXT_PUBLIC_API_BASE_URL }}" >> $GITHUB_ENV
+
       - name: Build project
         run: |
           npm run build  # Este paso debe ser ejecutado en el servidor, si no se ha hecho antes
@@ -33,14 +37,11 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}  # Clave privada para SSH
           port: 2225  # Aquí definimos el puerto 2225 en lugar del puerto 22
           script: |
-            # Definir las variables de entorno en el servidor
-            export NEXT_PUBLIC_API_BASE_URL="http://157.173.210.105:1337"  # URL de tu API de Strapi
-
             cd /home/reno7882/proyectos/nextjs  # Carpeta en el servidor
             git pull origin main  # Hacer pull de la rama main
             npm install  # Instalar dependencias
             npm run build  # Ejecutar build para generar la carpeta dist
             pm2 restart nextjs-app
-            
+
             # Reiniciar la aplicación nextjs con las nuevas variables de entorno
             pm2 status nextjs-app || echo "Error al reiniciar nextjs"
