@@ -16,18 +16,19 @@ const md = new MarkdownIt({
 });
 
 const ArticlePage = async ({ params }: { params: { slug: string } }) => {
-    const { slug } = await params;
+    const { slug } = params; // No es necesario `await` aquí, ya que `params` no es una promesa
 
     // Hacer fetch para obtener los detalles del artículo según el slug
     const res = await fetch(
-        `http://localhost:1337/api/articles?filters[slug][$eq]=${slug}`
+        `http://localhost:1337/api/articles?filters[slug][$eq]=${slug}&populate=cover`
     );
     const data = await res.json();
-    const article = data.data?.[0]; // Asumimos que solo hay un artículo con ese slug
 
-    if (!article) {
+    if (!data || !data.data || data.data.length === 0) {
         return <p>Artículo no encontrado.</p>;
     }
+
+    const article = data.data[0]; // Asumimos que solo hay un artículo con ese slug
 
     // Paso 1: Dividir el contenido en bloques de código y texto normal
     const contentParts: string[] = article.content.split(/(```[\s\S]*?```)/); // Divide por bloques de código
@@ -51,9 +52,6 @@ const ArticlePage = async ({ params }: { params: { slug: string } }) => {
 
     // Paso 3: Convertir el contenido a HTML usando markdown-it
     const renderedContent = md.render(contentWithLineBreaks);
-
-    // Verificación: Ver el contenido renderizado
-    // console.log(renderedContent);  Esto debería mostrar el HTML generado
 
     return (
         <div>
