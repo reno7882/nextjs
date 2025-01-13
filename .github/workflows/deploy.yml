@@ -33,6 +33,9 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}  # Clave privada para SSH
           port: 2225  # Aquí definimos el puerto 2225 en lugar del puerto 22
           script: |
+            # Definir las variables de entorno en el servidor
+            export NEXT_PUBLIC_API_BASE_URL="http://157.173.210.105:1337"  # URL de tu API de Strapi
+
             cd /home/reno7882/proyectos/nextjs  # Carpeta en el servidor
             git pull origin main  # Hacer pull de la rama main
             npm install  # Instalar dependencias
