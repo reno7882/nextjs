@@ -8,6 +8,9 @@ interface Article {
     content: string; // Asegúrate de que el artículo tenga un campo 'content' que contenga el Markdown
 }
 
+// Obtener la URL base de la API desde las variables de entorno
+const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL; // Esto se puede definir en tu archivo .env
+
 // Inicializamos MarkdownIt con la opción html activada
 const md = new MarkdownIt({
     html: true,
@@ -21,7 +24,7 @@ const ArticlePage = async ({ params }: { params: { slug: string } }) => {
 
     // Hacer fetch para obtener los detalles del artículo según el slug
     const res = await fetch(
-        `http://localhost:1337/api/articles?filters[slug][$eq]=${slug}&populate=cover`
+        `${apiUrl}/api/articles?filters[slug][$eq]=${slug}&populate=cover`
     );
     const data = await res.json();
 

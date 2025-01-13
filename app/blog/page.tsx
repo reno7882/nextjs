@@ -18,7 +18,9 @@ interface Article {
 }
 
 const BlogPage = async () => {
-  const res = await fetch('http://localhost:1337/api/articles?fields[0]=title&fields[1]=description&fields[2]=slug&fields[3]=publishedAt&populate[category][fields][0]=name&populate[cover][fields][0]=name&populate[cover][fields][1]=alternativeText&populate[cover][fields][2]=url');
+  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+  const res = await fetch(`${apiUrl}/api/articles?fields[0]=title&fields[1]=description&fields[2]=slug&fields[3]=publishedAt&populate[category][fields][0]=name&populate[cover][fields][0]=name&populate[cover][fields][1]=alternativeText&populate[cover][fields][2]=url`);
   const data = await res.json();
   const articles = Array.isArray(data.data) ? data.data : [];
 
@@ -53,7 +55,7 @@ const BlogPage = async () => {
                       <Image
                         alt={article.cover.alternativeText}
                         className="object-cover rounded-xl"
-                        src={`http://localhost:1337${article.cover.url}`}
+                        src={`${apiUrl}${article.cover.url}`}
                         style={{ objectFit: 'cover', width: '100%', height: '300px' }}
                       />
                     </div>
