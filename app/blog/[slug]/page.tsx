@@ -1,6 +1,9 @@
 import React from 'react';
 import MarkdownIt from 'markdown-it';
 
+// Definimos el tipo tParams como una promesa
+type tParams = Promise<{ slug: string[] }>;
+
 interface Article {
     id: number;
     title: string;
@@ -15,12 +18,13 @@ const md = new MarkdownIt({
     typographer: true,
 });
 
-const ArticlePage = async ({ params }: { params: { slug: string } }) => {
-    const { slug } = params; // No es necesario `await` aquí, ya que `params` no es una promesa
+export default async function ArticlePage(props: { params: tParams }) {
+    // Usamos await para desestructurar el valor de params
+    const { slug } = await props.params;
 
     // Hacer fetch para obtener los detalles del artículo según el slug
     const res = await fetch(
-        `http://localhost:1337/api/articles?filters[slug][$eq]=${slug}&populate=cover`
+        `http://localhost:1337/api/articles?filters[slug][$eq]=${slug[0]}&populate=cover`
     );
     const data = await res.json();
 
@@ -62,6 +66,4 @@ const ArticlePage = async ({ params }: { params: { slug: string } }) => {
             />
         </div>
     );
-};
-
-export default ArticlePage;
+}
