@@ -8,9 +8,9 @@ interface Article {
   description: string;
   slug: string;
   cover: {
-    url: string;
+    url: string;  // Asegúrate de que la url pueda ser null
     alternativeText: string;
-  };
+  };  // Asegúrate de que cover también pueda ser null
   publishedAt: string;
   category: {
     name: string;  // Añadir nombre de la categoría
@@ -42,10 +42,8 @@ const BlogPage = async () => {
           <p>No hay artículos disponibles.</p>
         ) : (
           articles.map((article: Article) => {
-            // Lógica condicional para la URL de la imagen
-            const coverUrl = article.cover.url.includes("cloudinary")
-              ? article.cover.url // Si contiene "cloudinary", usa la URL tal cual
-              : `${apiUrl}${article.cover.url}`; // Si no contiene "cloudinary", usa la URL relativa con la base
+            // Verificamos que 'cover' y 'cover.url' no sean nulos o indefinidos
+            const coverUrl = article.cover?.url || '/default-image.jpg'; // Usa una imagen por defecto si no tiene imagen
 
             return (
               <div key={article.id} style={{ marginBottom: '20px' }}>
@@ -59,7 +57,7 @@ const BlogPage = async () => {
                     <CardBody className="overflow-visible py-2">
                       <div style={{ position: 'relative', width: '100%', height: 'auto' }}>
                         <Image
-                          alt={article.cover.alternativeText}
+                          alt={article.cover?.alternativeText || 'Cover Image'}
                           className="object-cover rounded-xl"
                           src={coverUrl}  // Usar la URL calculada
                           style={{ objectFit: 'cover', width: '100%', height: '300px' }}
