@@ -1,15 +1,8 @@
 import React from 'react';
 import MarkdownIt from 'markdown-it';
 
-interface Article {
-    id: number;
-    title: string;
-    description: string;
-    content: string; // Asegúrate de que el artículo tenga un campo 'content' que contenga el Markdown
-}
-
 // Obtener la URL base de la API desde las variables de entorno
-const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL; // Esto se puede definir en tu archivo .env
+const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 // Inicializamos MarkdownIt con la opción html activada
 const md = new MarkdownIt({
@@ -18,9 +11,9 @@ const md = new MarkdownIt({
     typographer: true,
 });
 
-const ArticlePage = async ({ params }: { params: { slug: string } }) => {
+const ArticlePage = async ({ params }) => {
     // Esperamos a que 'params' esté disponible
-    const { slug } = params; // Usamos 'await' en params
+    const { slug } = await params;  // Aquí hemos agregado 'await' para esperar la promesa
 
     // Hacer fetch para obtener los detalles del artículo según el slug
     const res = await fetch(
@@ -35,7 +28,7 @@ const ArticlePage = async ({ params }: { params: { slug: string } }) => {
     const article = data.data[0]; // Asumimos que solo hay un artículo con ese slug
 
     // Paso 1: Dividir el contenido en bloques de código y texto normal
-    const contentParts: string[] = article.content.split(/(```[\s\S]*?```)/); // Divide por bloques de código
+    const contentParts = article.content.split(/(```[\s\S]*?```)/); // Divide por bloques de código
 
     // Paso 2: Procesar las partes de contenido
     const contentWithLineBreaks = contentParts
