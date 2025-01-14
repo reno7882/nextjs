@@ -9,20 +9,26 @@ interface Article {
   description: string;
   slug: string;
   cover: {
-    url: string;  // Asegúrate de que la url pueda ser null
+    url: string;
     alternativeText: string;
   };
   publishedAt: string;
   category: {
-    name: string;  // Añadir nombre de la categoría
+    name: string;
   };
 }
 
-const BlogPage = async () => {
+export default async function BlogPage() {
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-  // Hacer fetch directamente dentro del componente
-  const res = await fetch(`${apiUrl}/api/articles?fields[0]=title&fields[1]=description&fields[2]=slug&fields[3]=publishedAt&populate[category][fields][0]=name&populate[cover][fields][0]=name&populate[cover][fields][1]=alternativeText&populate[cover][fields][2]=url`);
+  // Realizar la llamada a la API sin caché
+  const res = await fetch(`${apiUrl}/api/articles?fields[0]=title&fields[1]=description&fields[2]=slug&fields[3]=publishedAt&populate[category][fields][0]=name&populate[cover][fields][0]=name&populate[cover][fields][1]=alternativeText&populate[cover][fields][2]=url`, {
+    cache: 'no-store', // No almacenar nada en caché
+    next: {
+      revalidate: 0, // Revalidar los datos cada vez que se acceda a la página
+    },
+  });
+
   const data = await res.json();
   const articles = Array.isArray(data.data) ? data.data : [];
 
@@ -33,7 +39,7 @@ const BlogPage = async () => {
       day: 'numeric',
     };
     const date = new Date(dateString);
-    return date.toLocaleDateString('es-MX', options);  // Formato de fecha en español
+    return date.toLocaleDateString('es-MX', options);
   };
 
   return (
@@ -44,7 +50,7 @@ const BlogPage = async () => {
           <p>No hay artículos disponibles.</p>
         ) : (
           articles.map((article: Article) => {
-            const coverUrl = article.cover?.url || '/default-image.jpg'; // Usa una imagen por defecto si no tiene imagen
+            const coverUrl = article.cover?.url || '/default-image.jpg'; // Usar imagen por defecto si no tiene imagen
 
             return (
               <div key={article.id} style={{ marginBottom: '20px' }}>
@@ -75,6 +81,4 @@ const BlogPage = async () => {
       </div>
     </div>
   );
-};
-
-export default BlogPage;
+}
