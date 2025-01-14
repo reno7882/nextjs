@@ -1,4 +1,10 @@
-node_modules
+# Ignorar la carpeta node_modules
+node_modules/
+
 # Ignorar la carpeta .next generada por Next.js
-.next
+.next/
+
+# Ignorar archivos .env
 .env
+.env.local
+.env.*.local
