@@ -1,3 +1,4 @@
+// app/blog/page.tsx
 import React from 'react';
 import Link from 'next/link';
 import { Card, CardHeader, CardBody, Image } from '@nextui-org/react';
@@ -10,7 +11,7 @@ interface Article {
   cover: {
     url: string;  // Asegúrate de que la url pueda ser null
     alternativeText: string;
-  };  // Asegúrate de que cover también pueda ser null
+  };
   publishedAt: string;
   category: {
     name: string;  // Añadir nombre de la categoría
@@ -20,6 +21,7 @@ interface Article {
 const BlogPage = async () => {
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
+  // Hacer fetch directamente dentro del componente
   const res = await fetch(`${apiUrl}/api/articles?fields[0]=title&fields[1]=description&fields[2]=slug&fields[3]=publishedAt&populate[category][fields][0]=name&populate[cover][fields][0]=name&populate[cover][fields][1]=alternativeText&populate[cover][fields][2]=url`);
   const data = await res.json();
   const articles = Array.isArray(data.data) ? data.data : [];
@@ -42,7 +44,6 @@ const BlogPage = async () => {
           <p>No hay artículos disponibles.</p>
         ) : (
           articles.map((article: Article) => {
-            // Verificamos que 'cover' y 'cover.url' no sean nulos o indefinidos
             const coverUrl = article.cover?.url || '/default-image.jpg'; // Usa una imagen por defecto si no tiene imagen
 
             return (
@@ -51,15 +52,15 @@ const BlogPage = async () => {
                   <Card className="py-4">
                     <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
                       <h4 className="font-bold text-large">{article.title}</h4>
-                      <small className="text-default-500">{formatDate(article.publishedAt)}</small>  {/* Fecha formateada */}
-                      <p className="text-tiny uppercase font-bold">{article.category.name}</p>  {/* Categoria del artículo */}
+                      <small className="text-default-500">{formatDate(article.publishedAt)}</small>
+                      <p className="text-tiny uppercase font-bold">{article.category.name}</p>
                     </CardHeader>
                     <CardBody className="overflow-visible py-2">
                       <div style={{ position: 'relative', width: '100%', height: 'auto' }}>
                         <Image
                           alt={article.cover?.alternativeText || 'Cover Image'}
                           className="object-cover rounded-xl"
-                          src={coverUrl}  // Usar la URL calculada
+                          src={coverUrl}
                           style={{ objectFit: 'cover', width: '100%', height: '300px' }}
                         />
                       </div>
